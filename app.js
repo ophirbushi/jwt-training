@@ -3,13 +3,15 @@ const app = express();
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
+const crypto = require('crypto');
+
 const db = require('./db');
 
 const secret = 'Pvvi6WSKpUT45bq8ecewKAGViV6lryW8apOgokaM1tTFA30iHejS1dV9ujoM';
 
 app.use(bodyParser());
-app.use(bodyParser.json());       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
@@ -22,19 +24,58 @@ app.get('/door', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    db.login(req.body.signin_username, req.body.signin_password)
-        .then(() => {
-            const token = jwt.sign({ userName: req.body.signin_username }, secret);
-            res.cookie('access-token', token, { httpOnly: true });
+    db.login(req.body.signin_username)
+        .then((doc) => {
+            const salt = doc.salt;
+
+            const hashObject = crypto.createHash('sha256');
+            hashObject.update(`${salt}${req.body.signin_password}`);
+            const hash = hashObject.digest('base64');
+
+            if (hash !== doc.hash) {
+                return res.sendStatus(401);
+            }
+
+            const token = jwt.sign({
+                userName: req.body.signin_username
+            }, secret);
+            res.cookie('access-token', token, {
+                httpOnly: true
+            });
             res.sendStatus(200);
         }).catch((err) => {
-            res.cookie('fail-auth', '1', { httpOnly: true });
-            res.setHeader('content-type', 'text/plain');
             res.sendStatus(401);
         });
 });
 
-app.get('/userdetails', (req, res) => {
+app.post('/register', (req, res) => {
+    if (!req.body || !req.body.register_username || !req.body.register_password) {
+        res.sendStatus(400);
+    }
+
+    const salt = crypto.randomBytes(32).toString('base64');
+
+    const hashObject = crypto.createHash('sha256');
+    hashObject.update(`${salt}${req.body.register_password}`);
+
+    const hash = hashObject.digest('base64');
+
+    db.register(req.body.register_username, hash, salt)
+        .then(() => {
+            const token = jwt.sign({
+                userName: req.body.register_username
+            }, secret);
+            res.cookie('access-token', token, {
+                httpOnly: true
+            });
+            res.sendStatus(200);
+        }).catch((err) => {
+            res.send(err);
+        });
+});
+
+
+app.post('/userdetails', (req, res) => {
     const cookie = req.headers.cookie;
     if (cookie) {
         const cookies = cookie.split(';');
@@ -48,7 +89,10 @@ app.get('/userdetails', (req, res) => {
                     value: split[1]
                 };
             }
-            return { key: -1, value: -1 };
+            return {
+                key: -1,
+                value: -1
+            };
         });
         const accessToken = keyValues.find(pair => pair.key === 'access-token');
 
@@ -66,11 +110,11 @@ app.get('/userdetails', (req, res) => {
                 res.sendStatus(401);
             }
         } else {
-            res.sendStatus(401);
+            return res.sendStatus(401);
         }
+    } else {
+        return res.sendStatus(401);
     }
-
-
 });
 
 app.listen(8080);
