@@ -100,7 +100,7 @@ app.post('/userdetails', (req, res) => {
             try {
                 const decoded = jwt.verify(accessToken.value, secret);
                 const userName = decoded.userName;
-                db.getUserDetails(userName).then(details => {
+                db.login(userName).then(details => {
                     res.send(details);
                 }).catch(err => {
                     res.sendStatus(404);
@@ -119,4 +119,3 @@ app.post('/userdetails', (req, res) => {
 
 
 app.listen(80);
-
