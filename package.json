@@ -1,5 +1,5 @@
 {
-  "name": "mongo-training",
+  "name": "jwt-training",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,6 +12,7 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "jsonwebtoken": "^7.4.1",
+    "mongo-training": "file:mongo-training-1.0.0.tgz",
     "mongodb": "^2.2.30"
   }
 }
