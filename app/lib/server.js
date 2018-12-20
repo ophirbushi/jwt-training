@@ -5,13 +5,16 @@ class AppServer {
 
     /**
      * @param {Array<import("../../types").RouteDefinition>} routes 
-     * @param {number} port
      */
-    constructor(routes, port = 8080) {
+    constructor(routes) {
         const app = this.app = express();
         this._registerMiddlewares(app);
         this._registerRoutes(app, routes);
-        app.listen(port, () => console.log('listening on port ' + port));
+    }
+
+    /** @param {number} port */
+    listen(port = 8080) {
+        this.app.listen(port, () => console.log('listening on port ' + port));
     }
 
     _registerMiddlewares(app) {

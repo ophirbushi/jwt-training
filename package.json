@@ -4,15 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node ./app/main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.17.2",
+    "body-parser": "^1.18.3",
     "express": "^4.15.3",
-    "jsonwebtoken": "^7.4.1",
-    "mongo-training": "file:mongo-training-1.0.0.tgz",
+    "jsonwebtoken": "^7.4.3",
     "mongodb": "^2.2.30"
   }
 }

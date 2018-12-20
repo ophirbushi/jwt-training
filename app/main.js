@@ -3,6 +3,7 @@ const {
 } = require('./lib/server');
 const {
     APP_ROUTES
-} = require('./routes');
+} = require('./routes/index');
 
-const server = new AppServer(APP_ROUTES, 8080);
+const server = new AppServer(APP_ROUTES);
+server.listen(8080);
