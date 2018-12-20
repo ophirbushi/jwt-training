@@ -6,4 +6,4 @@ const {
 } = require('./routes/index');
 
 const server = new AppServer(APP_ROUTES);
-server.listen(8080);
+server.listen();

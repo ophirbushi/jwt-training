@@ -1,3 +1,3 @@
 module.exports = (req, res) => {
-    res.sendfile('./index.html');
+    res.render('index');
 };
