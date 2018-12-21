@@ -28,16 +28,14 @@ module.exports = (req, res) => {
         if (accessToken) {
             try {
                 const decoded = jwt.verify(accessToken.value, secret);
-                const userName = decoded.userName;
+                const userName = decoded['userName'];
                 new UsersService().getUser(userName)
                     .then(details => {
-                        res.send(details);
-                    }).catch(err => {
-                        res.sendStatus(404);
+                        if (details) res.send(details);
+                        else res.sendStatus(401);
                     });
-
             } catch (err) {
-                res.sendStatus(401);
+                res.sendStatus(500);
             }
         } else {
             return res.sendStatus(401);
