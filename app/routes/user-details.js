@@ -1,3 +1,9 @@
+const jwt = require('jsonwebtoken');
+const secret = require('../secret');
+const {
+    UsersService
+} = require('../lib/users.service');
+
 module.exports = (req, res) => {
     const cookie = req.headers.cookie;
     if (cookie) {
@@ -23,11 +29,12 @@ module.exports = (req, res) => {
             try {
                 const decoded = jwt.verify(accessToken.value, secret);
                 const userName = decoded.userName;
-                db.login(userName).then(details => {
-                    res.send(details);
-                }).catch(err => {
-                    res.sendStatus(404);
-                });
+                new UsersService().getUser(userName)
+                    .then(details => {
+                        res.send(details);
+                    }).catch(err => {
+                        res.sendStatus(404);
+                    });
 
             } catch (err) {
                 res.sendStatus(401);

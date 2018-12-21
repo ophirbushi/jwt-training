@@ -26,7 +26,7 @@ const APP_ROUTES = [{
         handler: registerHandler
     },
     {
-        method: 'post',
+        method: 'get',
         path: '/userdetails',
         handler: userDetailsHandler
     }
