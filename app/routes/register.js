@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const {
     PasswordsService
 } = require('../lib/passwords.service');
@@ -6,7 +5,9 @@ const {
     UsersService,
     UserAlreadyExistsError
 } = require('../lib/users.service');
-const secret = require('../secret');
+const {
+    TokenService
+} = require('../lib/token.service');
 
 module.exports = async (req, res) => {
     if (!req.body || !req.body.register_username || !req.body.register_password) {
@@ -20,12 +21,7 @@ module.exports = async (req, res) => {
 
     try {
         await new UsersService().register(req.body.register_username, hash, salt);
-        const token = jwt.sign({
-            userName: req.body.register_username
-        }, secret);
-        res.cookie('access-token', token, {
-            httpOnly: true
-        });
+        new TokenService().addAccessTokenToResponseCookie(res, req.body.register_username);
         res.sendStatus(200);
     } catch (error) {
         console.error('error: ', error);

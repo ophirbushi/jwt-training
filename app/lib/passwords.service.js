@@ -3,6 +3,7 @@ const crypto = require('crypto');
 class PasswordsService {
 
     constructor() {
+        /** @type import('crypto').HexBase64Latin1Encoding */
         this.encoding = 'base64';
         this.saltBytesCount = 32;
         this.hashAlgorithm = 'sha256';
