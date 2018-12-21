@@ -10,7 +10,7 @@ class TokenService {
     }
 
     getAccessTokenFromCookie(cookieString) {
-        const cookies = cookie.parse(cookieString);
+        const cookies = cookie.parse(cookieString || '');
         return cookies[this.ACCESS_TOKEN];
     }
 
